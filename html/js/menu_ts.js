@@ -6,6 +6,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -1316,6 +1318,12 @@ function openPopUp(dataType, element) {
             select.setAttribute("onchange", "javascript: this.className = 'changed'; checkXmltvChannel('" + id + "',this,'" + xmlFile + "');");
             sortSelect(select);
             content.appendRow("{{.mapping.xmltvChannel.title}}", select);
+            // FFmpeg Option
+            var dbKey = "ffmpeg-options";
+            var input = content.createInput("text", dbKey, data[dbKey]);
+            input.setAttribute("onchange", "javascript: this.className = 'changed'");
+            input.setAttribute("id", "channel-icon");
+            content.appendRow("{{.settings.ffmpegOptions.title}}", input);
             // Interaktion
             content.createInteraction();
             // Logo hochladen

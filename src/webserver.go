@@ -178,7 +178,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 		showInfo("Streaming Info:xTeVe is no longer involved, the client connects directly to the streaming server.")
 
 	default:
-		bufferingStream(streamInfo.PlaylistID, streamInfo.URL, streamInfo.Name, w, r)
+		bufferingStream(streamInfo.PlaylistID, streamInfo.URL, streamInfo.Name, streamInfo.FFmpegOptions, w, r)
 
 	}
 

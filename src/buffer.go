@@ -43,7 +43,7 @@ func createStreamID(stream map[int]ThisStream) (streamID int) {
 	return
 }
 
-func bufferingStream(playlistID, streamingURL, channelName string, w http.ResponseWriter, r *http.Request) {
+func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions string, w http.ResponseWriter, r *http.Request) {
 
 	time.Sleep(time.Duration(Settings.BufferTimeout) * time.Millisecond)
 
@@ -213,7 +213,7 @@ func bufferingStream(playlistID, streamingURL, channelName string, w http.Respon
 		case "xteve":
 			go connectToStreamingServer(streamID, playlistID)
 		case "ffmpeg", "vlc":
-			go thirdPartyBuffer(streamID, playlistID)
+			go thirdPartyBuffer(streamID, playlistID, ffmpegOptions)
 
 		default:
 			break
@@ -1342,7 +1342,7 @@ func switchBandwidth(stream *ThisStream) (err error) {
 }
 
 // Buffer mit FFMPEG
-func thirdPartyBuffer(streamID int, playlistID string) {
+func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions string) {
 
 	if p, ok := BufferInformation.Load(playlistID); ok {
 
@@ -1366,7 +1366,11 @@ func thirdPartyBuffer(streamID int, playlistID string) {
 
 		case "ffmpeg":
 			path = Settings.FFmpegPath
-			options = Settings.FFmpegOptions
+			if len(ffmpegOptions) > 0 {
+				options = ffmpegOptions
+			} else {
+				options = Settings.FFmpegOptions
+			}
 
 		case "vlc":
 			path = Settings.VLCPath

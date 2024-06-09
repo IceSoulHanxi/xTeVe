@@ -1605,6 +1605,13 @@ function openPopUp(dataType, element) {
       sortSelect(select)
       content.appendRow("{{.mapping.xmltvChannel.title}}", select)
 
+      // FFmpeg Option
+      var dbKey:string = "ffmpeg-options"
+      var input = content.createInput("text", dbKey, data[dbKey])
+      input.setAttribute("onchange", "javascript: this.className = 'changed'")
+      input.setAttribute("id", "channel-icon")
+      content.appendRow("{{.settings.ffmpegOptions.title}}", input)
+
       // Interaktion
       content.createInteraction()
 
