@@ -392,8 +392,8 @@
       "info_false": "No Buffer (Client connects to the streaming server)",
       "info_xteve": "xTeVe connects to the streaming server",
       "info_ffmpeg": "FFmpeg connects to the streaming server",
-      "info_vlc": "VLC connects to the streaming server"
-
+      "info_vlc": "VLC connects to the streaming server",
+      "info_global": "Use global setting"
     },
     "udpxy":
     {

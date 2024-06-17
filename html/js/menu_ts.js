@@ -1324,6 +1324,13 @@ function openPopUp(dataType, element) {
             input.setAttribute("onchange", "javascript: this.className = 'changed'");
             input.setAttribute("id", "channel-icon");
             content.appendRow("{{.settings.ffmpegOptions.title}}", input);
+            // buffer
+            var dbKey = "buffer";
+            var text = ["{{.settings.streamBuffering.info_global}}", "{{.settings.streamBuffering.info_false}}", "xTeVe: ({{.settings.streamBuffering.info_xteve}})", "FFmpeg: ({{.settings.streamBuffering.info_ffmpeg}})", "VLC: ({{.settings.streamBuffering.info_vlc}})"];
+            var values = ["", "-", "xteve", "ffmpeg", "vlc"];
+            var select = content.createSelect(text, values, data[dbKey], dbKey);
+            select.setAttribute("onchange", "javascript: this.className = 'changed'");
+            content.appendRow("{{.settings.streamBuffering.title}}", select);
             // Interaktion
             content.createInteraction();
             // Logo hochladen

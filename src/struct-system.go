@@ -198,6 +198,7 @@ type XEPGChannelStruct struct {
 	XUpdateChannelName bool   `json:"x-update-channel-name,required"`
 	XDescription       string `json:"x-description,required"`
 	FFmpegOptions      string `json:"ffmpeg-options,omitempty"`
+	Buffer             string `json:"buffer"`
 }
 
 // M3UChannelStructXEPG : M3U Struktur für XEPG
@@ -242,6 +243,7 @@ type StreamInfo struct {
 	URL           string `json:"url,required"`
 	URLid         string `json:"urlID,required"`
 	FFmpegOptions string `json:"ffmpegOptions,omitempty"`
+	Buffer        string `json:"buffer,omitempty"`
 }
 
 // Notification : Notifikationen im Webinterface

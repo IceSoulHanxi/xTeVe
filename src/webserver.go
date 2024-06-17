@@ -136,10 +136,14 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 		streamInfo.URL = fmt.Sprintf("http://%s/udp/%s/", Settings.UDPxy, strings.TrimPrefix(streamInfo.URL, "udp://@"))
 	}
 
-	switch Settings.Buffer {
+	buffer := Settings.Buffer
+	if len(streamInfo.Buffer) > 0 {
+		buffer = streamInfo.Buffer
+	}
+	switch buffer {
 
 	case "-":
-		showInfo(fmt.Sprintf("Buffer:false [%s]", Settings.Buffer))
+		showInfo(fmt.Sprintf("Buffer:false [%s]", buffer))
 
 	case "xteve":
 		if strings.Index(streamInfo.URL, "rtsp://") != -1 || strings.Index(streamInfo.URL, "rtp://") != -1 {
@@ -153,14 +157,14 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		showInfo(fmt.Sprintf("Buffer:true [%s]", Settings.Buffer))
+		showInfo(fmt.Sprintf("Buffer:true [%s]", buffer))
 
 	default:
-		showInfo(fmt.Sprintf("Buffer:true [%s]", Settings.Buffer))
+		showInfo(fmt.Sprintf("Buffer:true [%s]", buffer))
 
 	}
 
-	if Settings.Buffer != "-" {
+	if buffer != "-" {
 		showInfo(fmt.Sprintf("Buffer Size:%d KB", Settings.BufferSize))
 	}
 
@@ -168,7 +172,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 	showInfo(fmt.Sprintf("Client User-Agent:%s", r.Header.Get("User-Agent")))
 
 	// Prüfen ob der Buffer verwendet werden soll
-	switch Settings.Buffer {
+	switch buffer {
 
 	case "-":
 		showInfo("Streaming URL:" + streamInfo.URL)
@@ -178,8 +182,7 @@ func Stream(w http.ResponseWriter, r *http.Request) {
 		showInfo("Streaming Info:xTeVe is no longer involved, the client connects directly to the streaming server.")
 
 	default:
-		bufferingStream(streamInfo.PlaylistID, streamInfo.URL, streamInfo.Name, streamInfo.FFmpegOptions, w, r)
-
+		bufferingStream(streamInfo.PlaylistID, streamInfo.URL, streamInfo.Name, streamInfo.FFmpegOptions, buffer, w, r)
 	}
 
 	return

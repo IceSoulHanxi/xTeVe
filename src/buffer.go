@@ -43,7 +43,7 @@ func createStreamID(stream map[int]ThisStream) (streamID int) {
 	return
 }
 
-func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions string, w http.ResponseWriter, r *http.Request) {
+func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions, buffer string, w http.ResponseWriter, r *http.Request) {
 
 	time.Sleep(time.Duration(Settings.BufferTimeout) * time.Millisecond)
 
@@ -86,7 +86,7 @@ func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions string
 
 		}
 
-		playlist.Tuner = getTuner(playlistID, playlistType)
+		playlist.Tuner = getTuner(playlistID, playlistType, buffer)
 
 		playlist.PlaylistName = getProviderParameter(playlist.PlaylistID, playlistType, "name")
 
@@ -208,7 +208,7 @@ func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions string
 		playlist.Streams[streamID] = stream
 		BufferInformation.Store(playlistID, playlist)
 
-		switch Settings.Buffer {
+		switch buffer {
 
 		case "xteve":
 			go connectToStreamingServer(streamID, playlistID)
@@ -1360,9 +1360,10 @@ func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions string) {
 
 		stream.Status = false
 
-		bufferType = strings.ToUpper(Settings.Buffer)
+		bufferA := Settings.Buffer
+		bufferType = strings.ToUpper(bufferA)
 
-		switch Settings.Buffer {
+		switch bufferA {
 
 		case "ffmpeg":
 			path = Settings.FFmpegPath
@@ -1642,9 +1643,9 @@ func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions string) {
 
 }
 
-func getTuner(id, playlistType string) (tuner int) {
+func getTuner(id, playlistType, buffer string) (tuner int) {
 
-	switch Settings.Buffer {
+	switch buffer {
 
 	case "-":
 		tuner = Settings.Tuner
