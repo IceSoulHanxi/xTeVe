@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
+	"xteve/html"
 	"xteve/src/internal/authentication"
 
 	"github.com/gorilla/websocket"
@@ -597,8 +597,9 @@ func Web(w http.ResponseWriter, r *http.Request) {
 	var lang = make(map[string]interface{})
 	var err error
 
-	var requestFile = strings.Replace(r.URL.Path, "/web", "html", -1)
-	var content, contentType, file string
+	var requestFile = r.URL.Path[len("/web/"):]
+	var content []byte
+	var contentType, file string
 
 	var language LanguageUI
 
@@ -613,11 +614,11 @@ func Web(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 
-		var languageFile = "html/lang/en.json"
+		var languageFile = "lang/en.json"
 
-		if value, ok := webUI[languageFile].(string); ok {
-			content = GetHTMLString(value)
-			lang = jsonToMap(content)
+		if value, err := html.WebUI.ReadFile(languageFile); err == nil {
+			content = value
+			lang = jsonToMap(string(content))
 		}
 
 	}
@@ -628,7 +629,7 @@ func Web(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if getFilenameFromPath(requestFile) == "html" {
+	if len(requestFile) == 0 {
 
 		if System.ScanInProgress == 0 {
 
@@ -734,52 +735,34 @@ func Web(w http.ResponseWriter, r *http.Request) {
 		}
 
 		requestFile = file
-
-		if value, ok := webUI[requestFile]; ok {
-
-			content = GetHTMLString(value.(string))
-
-			if contentType == "text/plain" {
-				w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
-			}
-
-		} else {
-
-			httpStatusError(w, r, 404)
-			return
-		}
-
 	}
 
-	if value, ok := webUI[requestFile].(string); ok {
-
-		content = GetHTMLString(value)
-		contentType = getContentType(requestFile)
+	contentType = getContentType(requestFile)
+	if value, err := html.WebUI.ReadFile(requestFile); err == nil {
+		content = value
 
 		if contentType == "text/plain" {
 			w.Header().Set("Content-Disposition", "attachment; filename="+getFilenameFromPath(requestFile))
 		}
-
 	} else {
 		httpStatusError(w, r, 404)
 		return
 	}
 
-	contentType = getContentType(requestFile)
-
 	if System.Dev == true {
 		// Lokale Webserver Dateien werden geladen, nur für die Entwicklung
-		content, _ = readStringFromFile(requestFile)
+		content1, _ := readStringFromFile("html/" + requestFile)
+		content = []byte(content1)
 	}
 
 	w.Header().Add("Content-Type", contentType)
 	w.WriteHeader(200)
 
 	if contentType == "text/html" || contentType == "application/javascript" {
-		content = parseTemplate(content, lang)
+		content = []byte(parseTemplate(string(content), lang))
 	}
 
-	w.Write([]byte(content))
+	w.Write(content)
 }
 
 // API : API request /api/
