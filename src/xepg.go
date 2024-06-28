@@ -602,8 +602,8 @@ func mapping() (err error) {
 
 						ShowError(fmt.Errorf(fmt.Sprintf("Missing EPG data: %s", xepgChannel.Name)), 0)
 						showWarning(2302)
-						xepgChannel.XActive = false
-
+						xepgChannel.XmltvFile = "xTeVe Dummy"
+						xepgChannel.XMapping = "360_Minutes"
 					}
 
 				} else {
@@ -612,20 +612,15 @@ func mapping() (err error) {
 
 					ShowError(fmt.Errorf("Missing XMLTV file: %s", getProviderParameter(fileID, "xmltv", "name")), 0)
 					showWarning(2301)
-					xepgChannel.XActive = false
-
+					xepgChannel.XmltvFile = "xTeVe Dummy"
+					xepgChannel.XMapping = "360_Minutes"
 				}
 
 			}
 
-			if len(xepgChannel.XmltvFile) == 0 {
-				xepgChannel.XmltvFile = "-"
-				xepgChannel.XActive = false
-			}
-
-			if len(xepgChannel.XMapping) == 0 {
-				xepgChannel.XMapping = "-"
-				xepgChannel.XActive = false
+			if len(xepgChannel.XmltvFile) == 0 || len(xepgChannel.XMapping) == 0 {
+				xepgChannel.XmltvFile = "xTeVe Dummy"
+				xepgChannel.XMapping = "360_Minutes"
 			}
 
 			Data.XEPG.Channels[xepg] = xepgChannel
