@@ -157,7 +157,7 @@ func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions, buffe
 				if value, err := html.WebUI.ReadFile("video/stream-limit.ts"); err == nil {
 					w.WriteHeader(200)
 					w.Header().Set("Content-type", "video/mpeg")
-					w.Header().Set("Content-Length:", "0")
+					w.Header().Set("Content-Length:", strconv.Itoa(len(value)))
 
 					for i := 1; i < 60; i++ {
 						_ = i
@@ -210,7 +210,7 @@ func bufferingStream(playlistID, streamingURL, channelName, ffmpegOptions, buffe
 		case "xteve":
 			go connectToStreamingServer(streamID, playlistID)
 		case "ffmpeg", "vlc":
-			go thirdPartyBuffer(streamID, playlistID, ffmpegOptions)
+			go thirdPartyBuffer(streamID, playlistID, ffmpegOptions, buffer)
 
 		default:
 			break
@@ -1339,7 +1339,7 @@ func switchBandwidth(stream *ThisStream) (err error) {
 }
 
 // Buffer mit FFMPEG
-func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions string) {
+func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions, buffer string) {
 
 	if p, ok := BufferInformation.Load(playlistID); ok {
 
@@ -1358,6 +1358,9 @@ func thirdPartyBuffer(streamID int, playlistID, ffmpegOptions string) {
 		stream.Status = false
 
 		bufferA := Settings.Buffer
+		if len(buffer) > 0 {
+			bufferA = buffer
+		}
 		bufferType = strings.ToUpper(bufferA)
 
 		switch bufferA {
